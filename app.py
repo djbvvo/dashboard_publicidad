@@ -2,13 +2,20 @@ import dash
 from dash import dcc, html, Input, Output
 import pandas as pd
 import plotly.express as px
+import os
 
 # 1. Cargar y preparar los datos
 df = pd.read_csv("Advertising.csv", index_col=0)
 df['Sinergia_TV_Radio'] = df['TV'] * df['Radio']
 
-# 2. Inicializar la aplicación
-app = dash.Dash(__name__)
+# 2. Inicializar la aplicación adaptada para el proxy de Binder
+# Esto detecta automáticamente la URL generada por Binder para cargar los gráficos
+prefix = os.environ.get('JUPYTERHUB_SERVICE_PREFIX', '')
+if prefix:
+    app = dash.Dash(__name__, requests_pathname_prefix=f"{prefix}proxy/8050/")
+else:
+    app = dash.Dash(__name__)
+
 server = app.server
 
 # 3. Colores y estilos
